@@ -13,14 +13,14 @@
 
 class FeatureCompare {
 public:
-    jint compare(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN Debugger* pDebugger = NULL);
-    jint compareWithMultiThread(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN Debugger* pDebugger = NULL);
+    jint compare(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN const jint scrollDirection, IN Debugger* pDebugger = NULL);
+    jint compareWithMultiThread(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN const jint scrollDirection, IN Debugger* pDebugger = NULL);
 
 protected:
     void xorBitmap(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, OUT NativeBitmap& xorBmp);
     void generateMask(IN const NativeBitmap& xorBmp, IN const NativeBitmap& bmp, OUT NativeBitmap& mask);
     void generateFeatures(IN const NativeBitmap& mask, OUT FeatureList& outFeatures);
-    jint compareFeatures(IN const NativeBitmap& bmp1, IN const NativeBitmap& mask1, IN FeatureList& features1, IN const NativeBitmap& bmp2, IN const NativeBitmap& mask2, IN  FeatureList& features2);
+    jint compareFeatures(IN const NativeBitmap& bmp1, IN const NativeBitmap& mask1, IN FeatureList& features1, IN const NativeBitmap& bmp2, IN const NativeBitmap& mask2, IN  FeatureList& features2, IN const jint scrollDirection);
 
 private:
     void findRect(IN const int index, INOUT std::queue<jint>& queue, INOUT const NativeBitmap& mask, INOUT  Feature& feature);
@@ -30,6 +30,8 @@ private:
 
     static void* generateMaskThreadRun(void* arg);
     static void* generateFeaturesThreadRun(void* arg);
+
+    static inline bool checkScrollDirection(jint direction, jint distance);
 };
 
 

@@ -9,11 +9,15 @@
 #include <jni.h>
 #include <vector>
 
-#define DEBUG_TAG "ImageMerge"
+#define DEBUG_TAG "ImageCompareLite"
 
 #define IN
 #define OUT
 #define INOUT
+
+#define SCROLL_DIRECTION_UNKNOWN  0
+#define SCROLL_DIRECTION_UP  1
+#define SCROLL_DIRECTION_DOWN  2
 
 //#define _DEBUG_IMAGE
 #define _DEBUG_PERFORMANCE

@@ -11,7 +11,7 @@ ImageMerge sImageCompare;
  * Method:    nativeCompareByFeature
  * Signature: (JJ[I)I
  */
-JNIEXPORT jint JNICALL Java_com_hf_imagecomparelite_ImageMerge_nativeCompareByFeature(JNIEnv * env, jclass cls, jlong bmp1, jlong bmp2, jintArray trimmed) {
+JNIEXPORT jint JNICALL Java_com_hf_imagecomparelite_ImageMerge_nativeCompareByFeature(JNIEnv * env, jclass cls, jlong bmp1, jlong bmp2, jint scrollDirection, jintArray trimmed) {
     if (bmp1 == 0 || bmp2 == 0) {
         return 0;
     }
@@ -22,9 +22,9 @@ JNIEXPORT jint JNICALL Java_com_hf_imagecomparelite_ImageMerge_nativeCompareByFe
     // compare
 #if defined _DEBUG_IMAGE || defined _DEBUG_PERFORMANCE
     Debugger debugger(env);
-    distance = sImageCompare.compareByFeature(NATIVE_BITMAP(bmp1), NATIVE_BITMAP(bmp2), trimmedArray[INDEX_TRIM_TOP], trimmedArray[INDEX_TRIM_BOTTOM], &debugger);
+    distance = sImageCompare.compareByFeature(NATIVE_BITMAP(bmp1), NATIVE_BITMAP(bmp2), scrollDirection, trimmedArray[INDEX_TRIM_TOP], trimmedArray[INDEX_TRIM_BOTTOM], &debugger);
 #else
-    distance = sImageCompare.compareByFeature(NATIVE_BITMAP(bmp1), NATIVE_BITMAP(bmp2), trimmedArray[INDEX_TRIM_TOP], trimmedArray[INDEX_TRIM_BOTTOM]);
+    distance = sImageCompare.compareByFeature(NATIVE_BITMAP(bmp1), NATIVE_BITMAP(bmp2), scrollDown, trimmedArray[INDEX_TRIM_TOP], trimmedArray[INDEX_TRIM_BOTTOM]);
 #endif
 
     // return trimmed top & bottom

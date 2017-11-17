@@ -11,10 +11,10 @@ extern "C" {
 /*
  * Class:     com_hf_imagecomparelite_ImageMerge
  * Method:    nativeCompareByFeature
- * Signature: (JJ[I)I
+ * Signature: (JJI[I)I
  */
 JNIEXPORT jint JNICALL Java_com_hf_imagecomparelite_ImageMerge_nativeCompareByFeature
-  (JNIEnv *, jclass, jlong, jlong, jintArray);
+  (JNIEnv *, jclass, jlong, jlong, jint, jintArray);
 
 /*
  * Class:     com_hf_imagecomparelite_ImageMerge

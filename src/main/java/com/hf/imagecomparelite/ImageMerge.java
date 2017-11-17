@@ -8,18 +8,23 @@ public class ImageMerge {
     public static final int INDEX_TRIM_TOP = 0;
     public static final int INDEX_TRIM_BOTTOM = 1;
 
+    public static final int SCROLL_DIRECTION_UNKNOWN = 0;
+    public static final int SCROLL_DIRECTION_UP = 1;
+    public static final int SCROLL_DIRECTION_DOWN = 2;
+
     /**
      * Compare two bitmap by feature and merge
      * @param bmp1 bitmap 1
      * @param bmp2 bitmap 2
+     * @param direction scroll direction. see: {@link #SCROLL_DIRECTION_UNKNOWN}, {@link #SCROLL_DIRECTION_UP}, {@link #SCROLL_DIRECTION_DOWN}
      * @param trimmed trimTop & trimBottom. (Distance from top & bottom) see: {@link #INDEX_TRIM_TOP}, {@link #INDEX_TRIM_BOTTOM}
      * @return distance between two bitmap
      */
-    public int compareByFeature(NativeBitmap bmp1, NativeBitmap bmp2, int[] trimmed) {
+    public int compareByFeature(NativeBitmap bmp1, NativeBitmap bmp2, int direction, int[] trimmed) {
         if(bmp1 == null || bmp2 == null){
             return 0;
         }
-        return nativeCompareByFeature(bmp1.getNativePtr(), bmp2.getNativePtr(), trimmed);
+        return nativeCompareByFeature(bmp1.getNativePtr(), bmp2.getNativePtr(), direction, trimmed);
     }
 
     /**
@@ -90,10 +95,11 @@ public class ImageMerge {
      * Merge two bitmaps by feature compare
      * @param bmpPtr1 bitmap 1
      * @param bmpPtr2 bitmap 2
+     * @param direction scroll direction. see: {@link #SCROLL_DIRECTION_UNKNOWN}, {@link #SCROLL_DIRECTION_UP}, {@link #SCROLL_DIRECTION_DOWN}
      * @param trimmed trimTop & trimBottom. see: {@link #INDEX_TRIM_TOP}, {@link #INDEX_TRIM_BOTTOM}
      * @return distance
      */
-    private static native int nativeCompareByFeature(long bmpPtr1, long bmpPtr2, /* out */ int[] trimmed);
+    private static native int nativeCompareByFeature(long bmpPtr1, long bmpPtr2, int direction, /* out */ int[] trimmed);
 
     /**
      * Merge two bitmaps by hash compare

@@ -9,10 +9,9 @@
 #include "NativeBitmap.h"
 #include "Debugger.h"
 
-
 class ImageMerge {
 public:
-    jint compareByFeature(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, OUT jint& trimTop, OUT jint& trimBottom, IN Debugger* pDebugger = NULL);
+    jint compareByFeature(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN const jint scrollDirection, OUT jint& trimTop, OUT jint& trimBottom, IN Debugger* pDebugger = NULL);
     jint compareByHash(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, OUT jint& trimTop, OUT jint& trimBottom, IN Debugger* pDebugger = NULL);
     void mergeBitmap(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN const jint trimTop, IN const jint trimBottom, IN const jint distance, OUT NativeBitmap& merged);
     void mergeBitmap2(IN const NativeBitmap& bmp1, IN jint startY1, IN jint endY1, IN const NativeBitmap& bmp2, IN jint startY2, IN jint endY2, OUT NativeBitmap& merged);

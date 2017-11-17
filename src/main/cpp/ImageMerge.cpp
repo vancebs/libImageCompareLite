@@ -9,7 +9,7 @@
 #define DEBUG_IMG_TRIMMED1     "trimmed1.png"
 #define DEBUG_IMG_TRIMMED2     "trimmed2.png"
 
-jint ImageMerge::compareByFeature(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, OUT jint& trimTop, OUT jint& trimBottom, IN Debugger* pDebugger) {
+jint ImageMerge::compareByFeature(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN const jint scrollDirection, OUT jint& trimTop, OUT jint& trimBottom, IN Debugger* pDebugger) {
     TRACE_INIT(pDebugger);
 
     // trim
@@ -26,7 +26,8 @@ jint ImageMerge::compareByFeature(IN const NativeBitmap& bmp1, IN const NativeBi
 
     // generate distance
     FeatureCompare compare;
-    jint distance = compare.compare(trimmed1, trimmed2, pDebugger);
+    jint distance = compare.compare(trimmed1, trimmed2, scrollDirection, pDebugger);
+    //jint distance = compare.compareWithMultiThread(trimmed1, trimmed2, scrollDirection, pDebugger);
     trimmed1.release();
     trimmed2.release();
     LOGI("==MyTest==", "distance: %d", distance);

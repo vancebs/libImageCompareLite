@@ -5,7 +5,9 @@
 #include "FeatureCompare.h"
 #include <algorithm>
 //#include <ext/hash_map>
-#include <hash_map>
+//#include <hash_map>
+//#include <unordered_map>
+#include <map>
 #include "MultiThreadTask.h"
 
 #define DEBUG_IMG_XOR           "xor.png"
@@ -96,7 +98,7 @@ struct GenerateFeaturesArg {
     OUT FeatureList* pFeatures;
 };
 
-jint FeatureCompare::compare(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN Debugger* pDebugger) {
+jint FeatureCompare::compare(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN const jint scrollDirection, IN Debugger* pDebugger) {
     // xor
     TRACE_BEGIN(pDebugger);
     NativeBitmap xorBmp;
@@ -125,7 +127,7 @@ jint FeatureCompare::compare(IN const NativeBitmap& bmp1, IN const NativeBitmap&
 
     // compare
     TRACE_BEGIN(pDebugger);
-    jint distance = compareFeatures(bmp1, mask1, featureList1, bmp2, mask2, featureList2);
+    jint distance = compareFeatures(bmp1, mask1, featureList1, bmp2, mask2, featureList2, scrollDirection);
     mask1.release();
     mask2.release();
     TRACE_END(pDebugger, "compare");
@@ -136,7 +138,7 @@ jint FeatureCompare::compare(IN const NativeBitmap& bmp1, IN const NativeBitmap&
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreturn-stack-address"
-jint FeatureCompare::compareWithMultiThread(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN Debugger* pDebugger) {
+jint FeatureCompare::compareWithMultiThread(IN const NativeBitmap& bmp1, IN const NativeBitmap& bmp2, IN const jint scrollDirection, IN Debugger* pDebugger) {
     // xor
     TRACE_BEGIN(pDebugger);
     NativeBitmap xorBmp;
@@ -175,7 +177,7 @@ jint FeatureCompare::compareWithMultiThread(IN const NativeBitmap& bmp1, IN cons
 
     // compare
     TRACE_BEGIN(pDebugger);
-    jint distance = compareFeatures(bmp1, mask1, featureList1, bmp2, mask2, featureList2);
+    jint distance = compareFeatures(bmp1, mask1, featureList1, bmp2, mask2, featureList2, scrollDirection);
     mask1.release();
     mask2.release();
     TRACE_END(pDebugger, "compare");
@@ -301,11 +303,12 @@ void FeatureCompare::generateFeatures(IN const NativeBitmap& mask, OUT FeatureLi
     //LOGI("==MyTest==", "outFeatures size: %d", outFeatures.size());
 }
 
-jint FeatureCompare::compareFeatures(IN const NativeBitmap& bmp1, IN const NativeBitmap& mask1, IN FeatureList& features1, IN const NativeBitmap& bmp2, IN const NativeBitmap& mask2, IN FeatureList& features2) {
+jint FeatureCompare::compareFeatures(IN const NativeBitmap& bmp1, IN const NativeBitmap& mask1, IN FeatureList& features1, IN const NativeBitmap& bmp2, IN const NativeBitmap& mask2, IN FeatureList& features2, IN const jint scrollDirection) {
     std::sort(features1.begin(), features1.end(), sort_by_s);
     std::sort(features2.begin(), features2.end(), sort_by_s);
 
-    __gnu_cxx::hash_map<jint, jint> map;
+    //__gnu_cxx::hash_map<jint, jint> map;
+    std::map<jint, jint> map;
 
     Feature* pF1;
     Feature* pF2;
@@ -332,8 +335,11 @@ jint FeatureCompare::compareFeatures(IN const NativeBitmap& bmp1, IN const Nativ
                     distance = FEATURE_DISTANCE(*pF1, *pF2);
                     //LOGI("==MyTest==", "distance: %d, [%d,%d,%d,%d] [%d,%d,%d,%d]", distance, pF1->left, pF1->top, pF1->right, pF1->bottom, pF2->left, pF2->top, pF2->right, pF2->bottom);
 
-                    if (pF1->top > distance) { // Feature's position y should be grater than distance. Or it should be a false match
-                        __gnu_cxx::hash_map<jint, jint>::iterator it = map.find(distance);
+                    // Feature's position y should be grater than distance. Or it should be a false match.
+                    // Distance should also match the scroll direction
+                    if (pF1->top > distance && checkScrollDirection(scrollDirection, distance)) {
+                        //__gnu_cxx::hash_map<jint, jint>::iterator it = map.find(distance);
+                        std::map<jint, jint>::iterator it = map.find(distance);
                         if (it != map.end()) {
                             (*it).second++;
                             count = (*it).second;
@@ -531,4 +537,16 @@ void* FeatureCompare::generateFeaturesThreadRun(void* arg) {
     GenerateFeaturesArg* pArg = (GenerateFeaturesArg*) arg;
     pArg->pCompare->generateFeatures(*(pArg->pMaskBmp), *(pArg->pFeatures));
     return NULL;
+}
+
+bool FeatureCompare::checkScrollDirection(jint direction, jint distance) {
+    switch (direction) {
+        case SCROLL_DIRECTION_UP:
+            return distance <= 0;
+        case SCROLL_DIRECTION_DOWN:
+            return distance >= 0;
+        case SCROLL_DIRECTION_UNKNOWN:
+        default:
+            return true;
+    }
 }
